@@ -19,7 +19,7 @@ const person = {
     // key-value pair
     name: "Amin"
 };
-//Json Object = 
+//Json Object = no comments 
 
 person.age = 123;
 

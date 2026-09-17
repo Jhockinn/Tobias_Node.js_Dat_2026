@@ -1,0 +1,7 @@
+HTTP Method	Endpoint	Description
+GET	/animals	Retrieves all Animals
+GET	/animals/{id}	Retrieves an animal  by id
+POST	/animals	Creates an animal  resource
+PUT	/animals/{id}	Replaces an entire animal resource
+PATCH	/animals/{id}	Replaces parts of the animal resource
+DELETE	/animals/{id}	Deletes a animal resource
