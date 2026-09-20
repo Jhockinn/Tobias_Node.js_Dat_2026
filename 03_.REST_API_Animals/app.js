@@ -3,10 +3,18 @@ const app = express();
 
 app.use(express.json());
 
+// post-fix
+// value++
+
+// pre-fix
+// ++value
+
 const animals = [
     { id: 1, name: "Parrot", age: 34 },
     { id: 2, name: "Pelican", age: 8 }
 ];
+
+// let currentId = 2;
 
 let nextId = 3;
 
@@ -26,7 +34,7 @@ app.get('/animals/:id', (req, res) => {
 
 
 app.post('/animals', (req, res) => {
-    if (!req.body.name || req.body.age === undefined) {
+    /*if (!req.body.name || req.body.age === undefined) {
         return res.status(400).send({ data: 'name and age are required' });
     }
 
@@ -39,8 +47,29 @@ app.post('/animals', (req, res) => {
     animals.push(newAnimal)
 
     res.status(201).send({ data: newAnimal });
-});
+    */
 
+   const providedAnimal = req.body;
+   
+   providedAnimal.id = nextId++;
+
+   animals.push(providedAnimal);
+
+   res.send({ data: providedAnimal });
+});
+/*
+const labrador = {
+    color : "brown",
+    energyLevel: 9.4
+};
+
+const chihuahua = {
+    energyLevel: 10.0,
+    isScaredOfAnything: false
+};
+
+console.log({ ...labrador, ...chihuahua });
+*/
 app.put('/animals/:id', (req, res) => {
     const providedId = Number(req.params.id);
     const foundAnimal = animals.find((animal) => animal.id === providedId);
@@ -60,6 +89,7 @@ app.put('/animals/:id', (req, res) => {
 })
 
 app.patch('/animals/:id', (req, res) => {
+    /*
     const providedId = Number(req.params.id);
     const foundAnimal = animals.find((animal) => animal.id === providedId);
 
@@ -71,9 +101,26 @@ app.patch('/animals/:id', (req, res) => {
     if (req.body.age !== undefined) foundAnimal.age = req.body.age;
 
     res.send({ data: foundAnimal });
+    */
+    const providedId = Number(req.params.id);
+    const foundAnimalIndex = animals.findIndex((animal) => animal.id === providedId);
+
+    if (foundAnimalIndex === -1) {
+        return res.status(404).send({ errorMessage: `No animal found by id ${providedId} `})
+    };
+
+    const providedAnimal = req.body;
+    const foundAnimal = animals[foundAnimalIndex];
+
+    const animalToCreate = {...foundAnimal, ...req.body, id: foundAnimal.id /* id: providedId */ };
+
+    animals[foundAnimalIndex] = animalToCreate;
+
+    res.send({ data: animalToCreate });
 });
 
 app.delete('/animals/:id', (req, res) => {
+    /*
     const providedId = Number(req.params.id);
     const foundIndex = animals.findIndex((animal) => animal.id === providedId);
 
@@ -84,6 +131,17 @@ app.delete('/animals/:id', (req, res) => {
     const deletedAnimal = animals.splice(foundIndex, 1);
 
     res.send({ data: deletedAnimal[0] });
+    */
+    const providedId = Number(req.params.id);
+    const foundAnimalIndex = animals.findIndex((animal) => animal.id === providedId)
+
+    if (foundAnimalIndex === -1) {
+        return res.status(404).send({ errorMessage: `No animal found by id ${providedId} `})
+    }
+
+    animals.splice(foundAnimalIndex, 1);
+
+    res.status(204).send();
 });
 
 // 2xx OK
@@ -92,6 +150,12 @@ app.delete('/animals/:id', (req, res) => {
 // 5xx Server-side error
 
 
-app.listen(8080, () =>{
-    console.log(`server is running`);
+const PORT = 8080;
+app.listen(PORT, (error) =>{
+    if (error){
+        console.log("Error running the server", error);
+        return;
+    }
+
+    console.log(`server is running on port ${PORT}`);
 });
